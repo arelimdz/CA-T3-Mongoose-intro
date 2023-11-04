@@ -8,32 +8,30 @@ router.get("/all", async (request, response) => {
 	let result = await Sighting.find({});
 
 	response.json({
-		sightings: result
+		sighting: result
 	});
 
 });
 
 // Find one sighting by its ID
 router.get("/one/id/:id", async (request, response) => {
-	let result = null;
+	let result = await Sighting.findById(request.params.id).populate('user cats', '-password');
 
 	response.json({
-		sightings: result
+		sighting: result
 	});
 
 });
-
 // Find one sighting by its name 
-// localhost:3000/sightings/one/location/Sydney
+// localhost:3000/sightings/multiple/location/Sydney
 router.get("/multiple/location/:locationToSearchFor", async (request, response) => {
-	let result = null;
+	let result = await Sighting.find({location: request.params.locationToSearchFor}).populate('user cats', '-password');
 
 	response.json({
 		sightings: result
 	});
 
 });
-
 
 
 
@@ -55,29 +53,50 @@ router.post("/", async (request, response) => {
 	// providedUser._id
 
 	// Error handling via Promise.catch()
+    
+    // Populate style 1
 	let result = await Sighting.create(request.body).catch(error => {return error});
 	result = await result.populate('cats');
-    // To filter values that we populate on the table
-    result = await result.populate('user', 'username');
+    // TO FILTER THE VALUES THAT WE WANT TO POPULATE 2 WAYS
+    // result = await result.populate('user', 'username');
+    result = await result.populate('user', '-password');
+
+    // Populate style 2
+    // let result = await Sighting
+	// .create(request.body)
+	// .catch(error => {return error});
+
+	// let newSighting = await Sighting
+	// .findOne({_id: result._id})
+	// .populate('cats')
+	// .populate('user', 'username')
+	// .catch(error => {return error});
 
 	response.json({
-		cat: result
+		sighting: result
 	});
 
 });
 
-// Update an existing cat in the DB.
-// Find one cat by its ID, and modify that cat. 
+// Update an existing  sighting in the DB.
+// Find one sighting by its ID, and modify that  sighting. 
 // Patch is for whatever properties are provided,
-// does not overwrite or remove any unmentioned properties of the cat 
+// does not overwrite or remove any unmentioned properties of the  sighting 
 router.patch("/:id", async (request, response) => {
-	let result = null;
+	let result = await Sighting.findByIdAndUpdate(
+		request.params.id, 
+		request.body,
+        {
+			returnDocument:"after"
+		}
+		);
 
 	response.json({
-		cat: result
+		sighting: result
 	});
 
 });
+
 
 // Find one cat by its ID,
 // and delete it from the DB.
@@ -85,7 +104,7 @@ router.delete("/:id", async (request, response) => {
 	let result = null;
 
 	response.json({
-		cat: result
+		sighting: result
 	});
 
 });
