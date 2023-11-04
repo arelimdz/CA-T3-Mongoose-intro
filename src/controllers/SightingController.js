@@ -56,7 +56,9 @@ router.post("/", async (request, response) => {
 
 	// Error handling via Promise.catch()
 	let result = await Sighting.create(request.body).catch(error => {return error});
-	
+	result = await result.populate('cats');
+    // To filter values that we populate on the table
+    result = await result.populate('user', 'username');
 
 	response.json({
 		cat: result

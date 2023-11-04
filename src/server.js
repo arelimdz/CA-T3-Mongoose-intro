@@ -13,7 +13,7 @@ app.get("/", (request, response) => {
 		message:"Hello world"
 	});
 });
-
+const { User } = require('./models/UserModel');
 const CatRouter = require('./controllers/CatController');
 app.use('/cats', CatRouter);
 
